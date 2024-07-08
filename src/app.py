@@ -6,9 +6,9 @@ import google.generativeai as genai
 
 load_dotenv()
 
-openai_api_key = os.getenv("OPENAI_API_KEY")
+api_key = "AIzaSyB0Cz3PInOyX-miF9MWgs8aaIDoSkMdw3I"
 
-if openai_api_key is None:
+if api_key is None:
     st.error("API key is not set.")
 else:
     if "chat_history" not in st.session_state:
@@ -25,7 +25,7 @@ else:
         "max_output_tokens": 8192,
         "response_mime_type": "text/plain",
     }
-
+    genai.configure(api_key=api_key)
     model = genai.GenerativeModel(
         model_name="gemini-1.5-flash",
         generation_config=generation_config,
@@ -49,12 +49,13 @@ else:
         # Send the user's query and get the response
         result = chat.send_message(query)
 
-        # Update the chat history
+        # Add the human query and AI response to the chat history
         chat_history.append(HumanMessage(query))
         chat_history.append(AIMessage(result.text))
 
         return result.text, chat_history
 
+    # Display the chat history
     for message in st.session_state.chat_history:
         if isinstance(message, HumanMessage):
             with st.chat_message("Human"):
@@ -65,13 +66,13 @@ else:
 
     user_query = st.chat_input("Message Bot")
 
-    if user_query is not None and user_query != "":
-        st.session_state.chat_history.append(HumanMessage(user_query))
+    if user_query:
+        response, updated_history = get_response(user_query, st.session_state.chat_history)
 
+        # Display the new user query and AI response
         with st.chat_message("Human"):
             st.markdown(user_query)
         with st.chat_message("AI"):
-            response, updated_history = get_response(user_query, st.session_state.chat_history)
             st.markdown(response)
 
         st.session_state.chat_history = updated_history
