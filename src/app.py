@@ -6,7 +6,7 @@ import google.generativeai as genai
 
 load_dotenv()
 
-api_key = "AIzaSyB0Cz3PInOyX-miF9MWgs8aaIDoSkMdw3I"
+api_key = "api-key"
 
 if api_key is None:
     st.error("API key is not set.")
